@@ -14,7 +14,7 @@ export default function SoldiersCard({soldier}: SoldiersCardProps) {
 
         <p>
             תפקיד:{" "}
-            {soldier.role === "COMMANDER" ? "חייל" : "מפקד"}
+            {soldier.role === "COMMANDER" ? "מפקד" : "חייל"}
         </p>
     </div>
   )

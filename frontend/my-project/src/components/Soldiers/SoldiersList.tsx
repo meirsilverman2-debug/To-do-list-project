@@ -1,12 +1,39 @@
-import { useState } from 'react'
-import { soldiersMock } from '../../mocks/soldierssMock';
-import SoldiersCard from './SoldiersCard';
-
+import { useState } from 'react';
+import { soldiersMock } from '../../mocks/soldierssMock.ts';
+import SoldiersCard from './SoldiersCard.tsx';
+import type {Soldier} from "../../types.ts";
+import SoldiersForm from './SoldiersForm.tsx';
 
 export default function SoldiersList() {
     const [search, setSearch] = useState("");
+    const [soldiers, setSoldiers] = useState<Soldier[]>(soldiersMock);
 
-    const filterdSoldier = soldiersMock.filter((soldier) => {
+    function handleAddSoldier(name: string, personalNumber: string){
+
+        const exists = soldiers.some(
+            (soldier) => soldier.personal_number === personalNumber
+        );
+        
+        if (exists) {
+            alert("חייל עם מספר אישי זה כבר קיים");
+            return;
+        }
+
+
+        const newSoldier: Soldier = {
+            name: name,
+            personal_number: personalNumber,
+            role: "SOLDIER",
+            commander_id: "blabla"
+        };
+
+        setSoldiers((currenrSoldier) => [
+            ...currenrSoldier,
+            newSoldier,
+        ]);
+    }
+
+    const filterdSoldier = soldiers.filter((soldier) => {
         const searchValue = search.toLowerCase();
         
     return (
@@ -20,7 +47,8 @@ export default function SoldiersList() {
   return (
     <section>
         <h1>ניהול חיילים</h1>
-        
+        <SoldiersForm onAddSoldier={handleAddSoldier}/>
+
         <input
         type="text"
         placeholder='חיפוש לפי שם או מספר  אישי'
