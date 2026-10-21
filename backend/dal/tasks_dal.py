@@ -5,12 +5,11 @@ class TaskDal:
     def __init__(self, table=tasks):
         self.table = table
 
-    def get_all(self, **filters):
+    def get_rows(self, **filters):
         query = self.table.select("*, soldiers(name, role)")
 
         for k, v in filters.items():
-            if v:
-                query = query.eq(k, v)
+            query = query.eq(k, v)
 
         res = query.execute()
         return res.data
