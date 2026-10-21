@@ -3,6 +3,7 @@ from flask_cors import CORS
 import os
 from dotenv import load_dotenv
 from werkzeug.exceptions import HTTPException
+from backend.routes.users_route import soldiers_bp
 
 load_dotenv()
 
@@ -28,7 +29,7 @@ def logger():
 @app.errorhandler(Exception)
 def error_format(error: Exception):
     print(str(error))
-    status = error.code or 500
+    status = getattr(error, "code", 500)
     message = str(error) or "Internal server error"
     return jsonify({"err": message}), status
 
@@ -36,6 +37,8 @@ def error_format(error: Exception):
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({"message": "Server is on"}), 200
+
+app.register_blueprint(soldiers_bp, url_prefix="/soldiers")
 
 
 
