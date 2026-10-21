@@ -1,65 +1,51 @@
-// 1. טיפוסים קבועים (Enums)
-// UserRole:
-export type UserRole = 'COMMANDER' | 'SOLDIER';
+import { useState } from "react";
 
-export type TaskStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
-
-export type DayOfWeek =
-  | 'ראשון'
-  | 'שני'
-  | 'שלישי'
-  | 'רביעי'
-  | 'חמישי'
-  | 'שישי'
-  | 'שבת';
-
-// Soldier:
-// 2. ישות חייל / מפקד (Soldier)
-export interface Soldier {
-  id: number;
-  personal_number: string;
-  name: string;
-  role: UserRole;
-  commander_id?: number | null;
-  // לא שולחים סיסמה לפרונטאנד מטעמי אבטחה
+interface SoldierFormProps {
+  onAddSoldier: (name: string, personalNumber: string) => void;
 }
 
-// 3. ישות משימה (Task)
-//
-export interface Task {
-  id: number;
-  title: string;
-  description: string;
-  status: TaskStatus;
-  day: DayOfWeek | string;
-  soldier_id: number;
-  // נתוני החייל שמגיעים ב-JOIN מ-Supabase:
-  soldiers?: {
-    name: string;
-    personal_number: string;
-    role: UserRole;
-  };
-}
+export default function SoldiersForm({ onAddSoldier }: SoldierFormProps) {
+  const [name, setName] = useState("");
+  const [personalNumber, setPersonalNumber] = useState("");
 
-// 4. טיפוס ליצירת משימה חדשה (מה שהמפקד שולח בטופס)
-export interface CreateTaskPayload {
-  title: string;
-  description?: string;
-  day: DayOfWeek | string;
-  soldier_id: number;
-  status?: TaskStatus;
-}
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
 
-// Login interface:
-export interface LoginRequest {
-    personal_number: string;
-    password: string;
-}
+    if (!name.trim() || !personalNumber.trim()) {
+        return;
+    }
 
-// Soldier schema:
-export interface CreateSoldierPayload {
-    personal_number: string;
-    name: string ;
-    password: string;
-    commander_id?: number | null;
-}
+
+    onAddSoldier(name.trim(), personalNumber.trim());
+
+    setName("");
+    setPersonalNumber("");
+  }
+
+  return(
+  <form onSubmit={handleSubmit}>
+    <h2>הוספת חייל</h2>
+
+     <label htmlFor="soldier-name">שם החייל</label>
+      <input
+        id="soldier-name"
+        type="text"
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+        placeholder="הכנס שם מלא"
+        required
+      />
+
+      <label htmlFor="personal-number">מספר אישי</label>
+      <input
+        id="personal-number"
+        type="text"
+        value={personalNumber}
+        onChange={(event) => setPersonalNumber(event.target.value)}
+        placeholder="הכנס מספר אישי"
+        required
+      />
+
+      <button type="submit">הוסף חייל</button>
+    </form>
+);}
