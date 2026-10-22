@@ -23,13 +23,13 @@ def create_task_route():
     result = create_task(body)
     return jsonify(result), 201
 
-@tasks_bp.patch("/<str:id>")
+@tasks_bp.patch("/<string:id>")
 def update_task_route(id):
-    body = request.get_json()
+    body = request.get_json() or {}
     result = update_task(id, body)
     return jsonify(result), 200
 
-@tasks_bp.delete("/<str:id>")
+@tasks_bp.delete("/<string:id>")
 def delete_task_route(id):
     result = delete_task(id)
     return jsonify(result), 200

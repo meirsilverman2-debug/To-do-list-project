@@ -2,7 +2,7 @@ from typing import Literal
 
 from backend.dal.tasks_dal import tasks_dal
 from pydantic import BaseModel, ValidationError
-from werkzeug.exceptions import BadRequest, NotFound
+from werkzeug.exceptions import InternalServerError, BadRequest, NotFound
 
 
 class TaskCreateSchema(BaseModel):
@@ -22,42 +22,44 @@ class TaskUpdateSchema(BaseModel):
 
 
 def get_tasks(day=None, personal_number=None, status=None):
-    return tasks_dal.get_rows(day=day, personal_number=personal_number, status=status)
+    return {
+        "success": "true",
+        "data": tasks_dal.get_rows(
+            day=day, personal_number=personal_number, status=status
+        ),
+    }
 
 
-def create_task(data: TaskCreateSchema):
-    try:
-        validated = TaskCreateSchema(**data)
-    except ValidationError as err:
-        raise BadRequest(err.json())
-    
+def create_task(data):
+
+    validated = TaskCreateSchema(**data)
+
     checked_data = validated.model_dump()
-    
+    if not checked_data:
+        raise BadRequest("No fields to create")
+
     new_task = tasks_dal.create(checked_data)
     if not new_task:
-        raise BadRequest("Bad request")
-    return new_task
+        raise InternalServerError("Cannot create task")
+    return {"success": "true", "data": new_task}
 
 
-def update_task(task_id, data: TaskUpdateSchema):
-    try:
-        validated = TaskUpdateSchema(**data)
-    except ValidationError as err:
-        raise BadRequest(err.json())
-    
+def update_task(task_id, data):
+    validated = TaskUpdateSchema(**data)
+
     checked_data = validated.model_dump(exclude_unset=True)
 
     if not checked_data:
-        raise BadRequest("Bad request")
+        raise BadRequest("Nothing to update")
 
     updated_task = tasks_dal.update(task_id, checked_data)
     if not updated_task:
         raise NotFound("Task not found")
-    return updated_task
+    return {"success": "true", "data": updated_task}
 
 
 def delete_task(task_id):
     deleted = tasks_dal.delete(task_id)
     if not deleted:
         raise NotFound("Task not found")
-    return {"message": "deleted successfully"}
+    return {"success": "true", "data": "deleted successfully"}
