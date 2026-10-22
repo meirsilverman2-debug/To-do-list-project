@@ -26,12 +26,27 @@ def logger():
     print(f"body: {request.get_json(silent=True)} | query: {request.args.to_dict()}")
 
 
+
+@app.errorhandler(HTTPException)
+def HttpErrors(e: HTTPException):
+    response = jsonify({
+        "code": e.code,
+        "name": e.name,
+        "description": e.description
+    })
+    return response, e.code
+
 @app.errorhandler(Exception)
-def error_format(error: Exception):
-    print(str(error))
-    status = getattr(error, "code", 500)
-    message = str(error) or "Internal server error"
-    return jsonify({"err": message}), status
+def unexpected_error(e: Exception):
+    print(str(e))
+    response = jsonify({
+        "code": 500,
+        "name": "Internal server error",
+        "description": "something went wrong, try again later"
+    })
+    return response, 500
+    
+
 
 
 @app.route("/health", methods=["GET"])
@@ -44,4 +59,4 @@ app.register_blueprint(soldiers_bp, url_prefix="/soldiers")
 
 
 if __name__ == "__main__":
-    app.run(port=int(os.getenv("PORT")))
+    app.run(port=int(os.getenv("PORT", 3000)))
