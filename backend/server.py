@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from werkzeug.exceptions import HTTPException
 from backend.routes.users_route import soldiers_bp
+from pydantic import ValidationError
 
 load_dotenv()
 
@@ -35,6 +36,14 @@ def HttpErrors(e: HTTPException):
         "description": e.description
     })
     return response, e.code
+
+@app.errorhandler(ValidationError)
+def handle_pydantic_errors(e: ValidationError):
+    return jsonify({
+        "code": 422, 
+        "name": "invalid data",
+        "description": e.errors()
+    }), 422
 
 @app.errorhandler(Exception)
 def unexpected_error(e: Exception):
