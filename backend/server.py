@@ -1,9 +1,11 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
 import os
-from dotenv import load_dotenv
-from werkzeug.exceptions import HTTPException
+
+from backend.routes.tasks_route import tasks_bp
 from backend.routes.users_route import soldiers_bp
+from dotenv import load_dotenv
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+from werkzeug.exceptions import HTTPException
 
 load_dotenv()
 
@@ -54,6 +56,7 @@ def health():
     return jsonify({"message": "Server is on"}), 200
 
 app.register_blueprint(soldiers_bp, url_prefix="/soldiers")
+app.register_blueprint(tasks_bp, url_prefix="/tasks")
 
 
 
