@@ -59,7 +59,7 @@ def get_all_soldiers():
     users = soldiers_repo.get_rows(**filters)
     return jsonify({
         "success": True,
-        "data": users
+        "data": users 
     })
 
 
