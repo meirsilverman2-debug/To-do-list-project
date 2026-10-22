@@ -1,5 +1,6 @@
 from backend.db.database import soldiers
 
+
 class Repo:
     def __init__(self, table=soldiers):
         self.table = table

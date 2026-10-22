@@ -9,7 +9,8 @@ class TaskDal:
         query = self.table.select("*, soldiers(name, role)")
 
         for k, v in filters.items():
-            query = query.eq(k, v)
+            if v:
+                query = query.eq(k, v)
 
         res = query.execute()
         return res.data
